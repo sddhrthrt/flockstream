@@ -1,0 +1,18 @@
+.bird {
+    width: 8px;
+    height: 8px;
+    border-radius: 8px;
+    display: block;
+    position: absolute;
+}
+.black{
+    background-color: #000;
+}
+.red{
+    background-color: #f00;
+}
+#sky{
+    width: 1200px;
+    height: 661px;
+    background: #eee;
+}
