@@ -1,0 +1,17 @@
+{% include 'head.html' %}
+<body onload="setUp(world)">
+    <canvas id='sky' width="800" height="600">
+    </canvas>
+    <div class='insert'>
+        <table>
+
+        <form action='/submit' method='post'>
+                <tr> <td>Service name: </td><td><input type='text' name='servicename' /></td></tr>
+                <tr> <td>Tags: </td><td><input type='text' size="40" name='tags' />(comma separated)</td></tr>
+                <tr><td></td><td><input type='submit' value='Add' /></td></tr>
+        </form>
+        <tr><td></td><td> <input type='button' onclick='clear_all()' value='Clear all services'/><span id='cleared'></span></td></tr>
+        </table>
+    </div>
+</body>
+{% include 'tail.html' %}

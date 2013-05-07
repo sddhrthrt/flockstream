@@ -12,7 +12,17 @@
     background-color: #f00;
 }
 #sky{
-    width: 1200px;
-    height: 661px;
+    width: 800px;
+    height: 600px;
     background: #eee;
+    display: inline-block;
+}
+.insert{
+    display: inline-block;
+    position: absolute ;
+}
+
+canvas{
+    background: #eee;
+    display: inline-block;
 }

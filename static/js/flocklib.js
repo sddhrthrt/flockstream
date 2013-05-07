@@ -8,7 +8,12 @@ function distance(x1, y1, x2, y2){
     return dist;
 }
 function divDistance(div1, div2){
-    return distance(div1.style.left, div1.style.top, div2.style.left, div2.style.top);
+    var i1 = _.indexOf(world.birds, div1),
+        i2 = _.indexOf(world.birds, div2);
+    return distance(world.positions[i1][0], world.positions[i1][1], world.positions[i2][0], world.positions[i2][1]);
+}
+function getPosition(div){
+    return world.positions[_.indexOf(world.birds, div)];
 }
 function interact(world){
     _.each(world.birds, function(bird){
@@ -22,6 +27,8 @@ function interact(world){
         var selection = _.filter(world.birds, function(b){ return divDistance(b, bird)<50; });
         var velocityar = [0.0, 0.0];
         var velocitycr = [0.0, 0.0];
+        var aforce = [0.0, 0.0];
+        var vc = world.getVelocity(bird);
         _.each(selection, function(b){
             /* var = (1/n)E(i=1->n)vi
              *        1   n   
@@ -30,10 +37,24 @@ function interact(world){
              *           i=1
              */
             var v = world.getVelocity(b);
+            var d = divDistance(b, bird);
+            var vectorforce = [0.0, 0.0];
+            if(d!=0){
+                vectorforce[0] += (getPosition(bird)[0]-getPosition(b)[0])/d;
+                vectorforce[1] += (getPosition(bird)[1]-getPosition(b)[1])/d;
+            }
+            var mag = world.values[_.indexOf(world.birds, bird)][_.indexOf(world.birds, b)];
             velocityar[0] += v[0];
             velocityar[1] += v[1];
-            velocitycr[0] += parseFloat(b.style.left)-parseFloat(bird.style.left);
-            velocitycr[1] += parseFloat(b.style.top)-parseFloat(bird.style.top);
+            velocitycr[0] += getPosition(b)[0]-getPosition(bird)[1];
+            velocitycr[1] += getPosition(b)[1]-getPosition(bird)[1];
+            if(mag){
+                aforce[0] += vectorforce[0]*mag*0.002;
+                aforce[1] += vectorforce[1]*mag*0.002;
+            }else{
+                aforce[0] += (-1/vectorforce[0])*.01;
+                aforce[1] += (-1/vectorforce[1])*.01;
+            }
         });
         velocityar[0] = velocityar[0]/selection.length;
         velocityar[1] = velocityar[1]/selection.length;
@@ -55,11 +76,14 @@ function interact(world){
                 velocitysr[1] += (0-(v[1]+vc[1]))/d;
             }
         });
-        world.velocities[_.indexOf(world.birds, bird)][0] = velocityar[0]*varc+velocitycr[0]*vcrc;
-        world.velocities[_.indexOf(world.birds, bird)][1] = velocityar[1]*varc+velocitycr[1]*vcrc;
+        draw_vector(getPosition(bird), velocityar[0], velocityar[1], 1);
+        draw_vector(getPosition(bird), velocitycr[0], velocitycr[1], 2);
+        draw_vector(getPosition(bird), velocitysr[0], velocitysr[1], 3);
+        world.velocities[_.indexOf(world.birds, bird)][0] = velocityar[0]*varc+velocitycr[0]*vcrc+aforce[0];
+        world.velocities[_.indexOf(world.birds, bird)][1] = velocityar[1]*varc+velocitycr[1]*vcrc+aforce[1];
         if(velocitysr[0]>0 && velocitysr[1]>0){
-            world.velocities[_.indexOf(world.birds, bird)][0] = velocityar[0]*varc+velocitysr[0]*vsrc+velocitycr[0]*vcrc;
-            world.velocities[_.indexOf(world.birds, bird)][1] = velocityar[1]*varc+velocitysr[1]*vsrc+velocitycr[0]*vcrc;
+            world.velocities[_.indexOf(world.birds, bird)][0] = velocityar[0]*varc+velocitysr[0]*vsrc+velocitycr[0]*vcrc+aforce[0];
+            world.velocities[_.indexOf(world.birds, bird)][1] = velocityar[1]*varc+velocitysr[1]*vsrc+velocitycr[0]*vcrc+aforce[1];
         }
     });
 }
